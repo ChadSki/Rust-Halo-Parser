@@ -1,0 +1,6 @@
+[package]
+name = "rust_halo_parser"
+version = "0.1.0"
+
+[dependencies]
+byteorder = "0.3.11"
