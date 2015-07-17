@@ -69,11 +69,19 @@ impl HaloMap {
         }
         let magic : usize = 0x40440000 - index_offset;
 
-        let tag_array = LittleEndian::read_u32(&data[index_offset..]) as usize - magic;
+        let tag_array_address = LittleEndian::read_u32(&data[index_offset..]) as usize;
+        if tag_array_address < 0x40440000 || tag_array_address > 0x40440000 + meta_size {
+            return None
+        }
+        let tag_array = tag_array_address - magic;
+
         map.scenario_tag = LittleEndian::read_u16(&data[index_offset + 0x4..]) as usize;
         let tag_count = LittleEndian::read_u32(&data[index_offset + 0xC..]) as usize;
+        if tag_count == 0 {
+            return None;
+        }
 
-        if (tag_array + 0x20 * tag_count) > map_size {
+        if (tag_array + 0x20 * tag_count) > index_offset + meta_size {
             return None
         }
 
@@ -126,15 +134,21 @@ impl HaloMap {
                 }
             }
             else {
-                tag.data_address = Some(tag_data);
-                tag.data_offset = Some(tag_data as usize - magic);
+                if (tag_data as usize) >= magic && (tag_data as usize) < (meta_size + 0x40440000 as usize) {
+                    tag.data_offset = Some(tag_data as usize - magic);
+                    tag.data_address = Some(tag_data);
+                }
             }
-            let tag_name_offset = LittleEndian::read_u32(&data[tag_location + 0x10..]) as usize - magic;
-            if tag_name_offset < meta_end {
-                unsafe {
-                    tag.path = match (&data[tag_name_offset..meta_end]).get_string() {
-                        None => String::new(),
-                        Some(n) => n
+
+            let tag_name_address = LittleEndian::read_u32(&data[tag_location + 0x10..]) as usize;
+            if tag_name_address >= 0x40440000 && tag_name_address < (0x40440000 + meta_size) {
+                let tag_name_offset = tag_name_address - magic;
+                if tag_name_offset < meta_end {
+                    unsafe {
+                        tag.path = match (&data[tag_name_offset..meta_end]).get_string() {
+                            None => String::new(),
+                            Some(n) => n
+                        }
                     }
                 }
             }

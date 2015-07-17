@@ -1,0 +1,10 @@
+[package]
+name = "tag_list"
+version = "0.1.0"
+authors = ["Paul Whitcomb <halogen002@gmail.com>"]
+
+[dependencies]
+byteorder = "0.3.11"
+
+[dependencies.rust_halo_parser]
+path = "../.."
