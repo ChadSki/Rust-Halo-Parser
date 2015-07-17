@@ -1,8 +1,8 @@
 mod halo_tag;
-pub use halo_map::halo_tag::HaloTag;
+pub use halo_tag::HaloTag;
 
 extern crate byteorder;
-use self::byteorder::{LittleEndian, ByteOrder};
+use byteorder::{LittleEndian, ByteOrder};
 
 use std::ffi::CStr;
 use std::str;
