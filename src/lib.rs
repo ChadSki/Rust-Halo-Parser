@@ -23,7 +23,7 @@ impl GetString for [u8] {
     unsafe fn get_string(&self) -> Option<String> {
         return match str::from_utf8(CStr::from_ptr(self.as_ptr() as *const i8).to_bytes() as &[u8]) {
             Err(_) => None,
-            Ok(k) => Some(k.to_string())
+            Ok(k) => Some(k.to_owned())
         }
     }
 }
@@ -109,9 +109,9 @@ impl HaloMap {
             if tag.indexed {
                 tag.resource_map_index = Some(tag_data);
                 tag.resource_map = match tag.class_a {
-                    1651078253 => Some("bitmaps".to_string()),
-                    1936614433 => Some("sounds".to_string()),
-                    _ => Some("loc".to_string())
+                    1651078253 => Some("bitmaps".to_owned()),
+                    1936614433 => Some("sounds".to_owned()),
+                    _ => Some("loc".to_owned())
                 }
             }
             else if tag.class_a == 1935831920 { //sbsp
